@@ -3,82 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港三大金行金價即時對比儀表板</title>
+    <title>香港三大金行金價即時對比儀表板 (純白明亮版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #121214; color: #e4e4e7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        /* 1. 設置全局底色為純白，文字為對比的深灰色 */
+        body { 
+            background-color: #FFFFFF; 
+            color: #27272a; /* 深鋅色，提供清晰對比 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+        /* 2. 頂部導航欄背景改為極淺灰，與主體區分 */
+        .header-bg {
+            background-color: #f8fafc; /* 超淺藍灰色 */
+            border-bottom: 1px solid #e2e8f0;
+        }
+        /* 3. 保留金色漸變，與純白底色非常搭 */
         .gold-gradient { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
-        .card-bg { background-color: #1a1a1e; border: 1px solid #27272a; }
+        /* 4. 卡片和表格背景改為淺灰或純白，邊框為淡灰 */
+        .card-bg { 
+            background-color: #FFFFFF; /* 純白卡片 */
+            border: 1px solid #e2e8f0; /* 淡灰邊框 */
+        }
+        .timer-bg {
+            background-color: #e2e8f0; /* 淡灰色，讓倒數計時器更醒目 */
+        }
+        /* 5. 優化表格行懸停效果，與純白底色對比 */
+        .table-row-hover:hover {
+            background-color: #f1f5f9; /* 極淺灰色懸停 */
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-6xl mx-auto">
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 p-6 header-bg rounded-2xl shadow-sm">
         <div class="flex items-center gap-3">
             <div class="p-3 gold-gradient rounded-2xl shadow-lg text-white">
                 <i class="fa-solid fa-coins text-2xl"></i>
             </div>
             <div>
-                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">香港三大金行金價即時對比</h1>
-                <p class="text-xs text-zinc-400 mt-0.5">每 5 分鐘自動雲端同步 • 單位：港幣 (HKD) / 兩</p>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-zinc-950">香港三大金行金價即時對比</h1>
+                <p class="text-xs text-zinc-600 mt-0.5">每 5 分鐘自動雲端同步 • 單位：港幣 (HKD) / 兩</p>
             </div>
         </div>
         
         <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-            <div class="card-bg px-4 py-2 rounded-xl text-center min-w-[100px]">
-                <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-medium">下次更新倒數</p>
-                <p id="countdown" class="text-sm font-mono font-bold text-yellow-500">05:00</p>
+            <div class="timer-bg px-4 py-2 rounded-xl text-center min-w-[100px] border border-slate-300">
+                <p class="text-[10px] uppercase tracking-wider text-zinc-700 font-medium">下次更新倒數</p>
+                <p id="countdown" class="text-sm font-mono font-bold text-yellow-600">05:00</p>
             </div>
-            <button onclick="fetchSheetData()" class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-200 text-sm font-semibold rounded-xl transition duration-200">
+            <button onclick="fetchSheetData()" class="flex items-center gap-2 px-4 py-2 gold-gradient hover:opacity-90 active:opacity-100 text-white text-sm font-semibold rounded-xl transition duration-200 shadow-md">
                 <i class="fa-solid fa-rotate text-xs"></i> 立即更新
             </button>
         </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-emerald-500">
-            <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><i class="fa-solid fa-shop text-xl"></i></div>
+        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-emerald-600 shadow-sm">
+            <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><i class="fa-solid fa-shop text-xl"></i></div>
             <div>
-                <p class="text-xs text-zinc-400">買金最平首選（對買家最划算）：</p>
-                <p id="best-sell-announcement" class="text-base font-bold text-emerald-400">正在計算數據...</p>
+                <p class="text-xs text-zinc-600">買金最平首選（對買家最划算）：</p>
+                <p id="best-sell-announcement" class="text-base font-bold text-emerald-700">正在計算數據...</p>
             </div>
         </div>
-        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-amber-500">
-            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl"><i class="fa-solid fa-hand-holding-dollar text-xl"></i></div>
+        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-amber-600 shadow-sm">
+            <div class="p-3 bg-amber-500/10 text-amber-600 rounded-xl"><i class="fa-solid fa-hand-holding-dollar text-xl"></i></div>
             <div>
-                <p class="text-xs text-zinc-400">賣金回購最高（對放金者最有利）：</p>
-                <p id="best-buy-announcement" class="text-base font-bold text-amber-400">正在計算數據...</p>
+                <p class="text-xs text-zinc-600">賣金回購最高（對放金者最有利）：</p>
+                <p id="best-buy-announcement" class="text-base font-bold text-amber-700">正在計算數據...</p>
             </div>
         </div>
     </div>
 
-    <div class="card-bg rounded-2xl overflow-hidden shadow-2xl overflow-x-auto">
+    <div class="card-bg rounded-2xl overflow-hidden shadow-sm overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[600px]">
             <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800 text-zinc-400 text-xs font-semibold">
+                <tr class="bg-slate-100 border-b border-zinc-200 text-zinc-700 text-xs font-semibold">
                     <th class="p-4 w-1/4">產品類別</th>
-                    <th class="p-4 text-center">周生生<span class="block text-[10px] font-normal text-zinc-500">Chow Sang Sang</span></th>
-                    <th class="p-4 text-center">六福珠寶<span class="block text-[10px] font-normal text-zinc-500">Lukfook</span></th>
-                    <th class="p-4 text-center">周大福<span class="block text-[10px] font-normal text-zinc-500">Chow Tai Fook</span></th>
+                    <th class="p-4 text-center border-l border-zinc-200">周生生<span class="block text-[10px] font-normal text-zinc-600">Chow Sang Sang</span></th>
+                    <th class="p-4 text-center border-l border-zinc-200">六福珠寶<span class="block text-[10px] font-normal text-zinc-600">Lukfook</span></th>
+                    <th class="p-4 text-center border-l border-zinc-200">周大福<span class="block text-[10px] font-normal text-zinc-600">Chow Tai Fook</span></th>
                 </tr>
             </thead>
-            <tbody class="text-sm divide-y divide-zinc-800/50" id="gold-table-body">
+            <tbody class="text-sm divide-y divide-zinc-200" id="gold-table-body">
                 </tbody>
         </table>
     </div>
 
-    <div class="mt-6 text-xs text-zinc-500 space-y-1.5 px-2">
-        <p class="flex items-center gap-2"><i class="fa-solid fa-circle-info text-zinc-400"></i> 專員數據分析提示：</p>
-        <ul class="list-disc pl-5 space-y-1 text-zinc-400">
-            <li>表格內綠色標記 <span class="text-emerald-400 font-bold">● 最低</span> 代表該產品「最平賣出價」（對買家最有利）。</li>
-            <li>表格內橙色標記 <span class="text-amber-500 font-bold">● 最高</span> 代表該產品「最高回購價」（對放金者最有利）。</li>
+    <div class="mt-6 text-xs space-y-1.5 px-2">
+        <p class="flex items-center gap-2 font-medium text-zinc-800"><i class="fa-solid fa-circle-info text-zinc-500"></i> 專員數據分析提示：</p>
+        <ul class="list-disc pl-5 space-y-1 text-zinc-700">
+            <li>表格內綠色標記 <span class="text-emerald-700 font-bold">● 最低</span> 代表該產品「最平賣出價」（對買家最有利）。</li>
+            <li>表格內橙色標記 <span class="text-amber-600 font-bold">● 最高</span> 代表該產品「最高回購價」（對放金者最有利）。</li>
             <li>本系統每 5 分鐘自動從您的 Google 試算表雲端資料庫提取最新牌價。</li>
         </ul>
     </div>
 
     <script>
-        // ⚠️ 請記得在下方雙引號內，重新貼上您的 Google 試算表 CSV 網址 ⚠️
+        // ⚠️ 請記得在下方雙引號內，貼上您的 Google 試算表 CSV 網址 ⚠️
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPl39uNAnwz5zXo1NlRptVbJ15F49P43O8I6p6r87A4mO9X93R2D2D2D/pub?output=csv";
+
+        let countdownValue = 300; // 5分鐘 = 300秒<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港三大金行金價即時對比儀表板 (純白明亮版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 1. 設置全局底色為純白，文字為對比的深灰色 */
+        body { 
+            background-color: #FFFFFF; 
+            color: #27272a; /* 深鋅色，提供清晰對比 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+        /* 2. 頂部導航欄背景改為極淺灰，與主體區分 */
+        .header-bg {
+            background-color: #f8fafc; /* 超淺藍灰色 */
+            border-bottom: 1px solid #e2e8f0;
+        }
+        /* 3. 保留金色漸變，與純白底色非常搭 */
+        .gold-gradient { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
+        /* 4. 卡片和表格背景改為淺灰或純白，邊框為淡灰 */
+        .card-bg { 
+            background-color: #FFFFFF; /* 純白卡片 */
+            border: 1px solid #e2e8f0; /* 淡灰邊框 */
+        }
+        .timer-bg {
+            background-color: #e2e8f0; /* 淡灰色，讓倒數計時器更醒目 */
+        }
+        /* 5. 優化表格行懸停效果，與純白底色對比 */
+        .table-row-hover:hover {
+            background-color: #f1f5f9; /* 極淺灰色懸停 */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 p-6 header-bg rounded-2xl shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="p-3 gold-gradient rounded-2xl shadow-lg text-white">
+                <i class="fa-solid fa-coins text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-zinc-950">香港三大金行金價即時對比</h1>
+                <p class="text-xs text-zinc-600 mt-0.5">每 5 分鐘自動雲端同步 • 單位：港幣 (HKD) / 兩</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+            <div class="timer-bg px-4 py-2 rounded-xl text-center min-w-[100px] border border-slate-300">
+                <p class="text-[10px] uppercase tracking-wider text-zinc-700 font-medium">下次更新倒數</p>
+                <p id="countdown" class="text-sm font-mono font-bold text-yellow-600">05:00</p>
+            </div>
+            <button onclick="fetchSheetData()" class="flex items-center gap-2 px-4 py-2 gold-gradient hover:opacity-90 active:opacity-100 text-white text-sm font-semibold rounded-xl transition duration-200 shadow-md">
+                <i class="fa-solid fa-rotate text-xs"></i> 立即更新
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-emerald-600 shadow-sm">
+            <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><i class="fa-solid fa-shop text-xl"></i></div>
+            <div>
+                <p class="text-xs text-zinc-600">買金最平首選（對買家最划算）：</p>
+                <p id="best-sell-announcement" class="text-base font-bold text-emerald-700">正在計算數據...</p>
+            </div>
+        </div>
+        <div class="card-bg p-4 rounded-2xl flex items-center gap-4 border-l-4 border-l-amber-600 shadow-sm">
+            <div class="p-3 bg-amber-500/10 text-amber-600 rounded-xl"><i class="fa-solid fa-hand-holding-dollar text-xl"></i></div>
+            <div>
+                <p class="text-xs text-zinc-600">賣金回購最高（對放金者最有利）：</p>
+                <p id="best-buy-announcement" class="text-base font-bold text-amber-700">正在計算數據...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-bg rounded-2xl overflow-hidden shadow-sm overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[600px]">
+            <thead>
+                <tr class="bg-slate-100 border-b border-zinc-200 text-zinc-700 text-xs font-semibold">
+                    <th class="p-4 w-1/4">產品類別</th>
+                    <th class="p-4 text-center border-l border-zinc-200">周生生<span class="block text-[10px] font-normal text-zinc-600">Chow Sang Sang</span></th>
+                    <th class="p-4 text-center border-l border-zinc-200">六福珠寶<span class="block text-[10px] font-normal text-zinc-600">Lukfook</span></th>
+                    <th class="p-4 text-center border-l border-zinc-200">周大福<span class="block text-[10px] font-normal text-zinc-600">Chow Tai Fook</span></th>
+                </tr>
+            </thead>
+            <tbody class="text-sm divide-y divide-zinc-200" id="gold-table-body">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 text-xs space-y-1.5 px-2">
+        <p class="flex items-center gap-2 font-medium text-zinc-800"><i class="fa-solid fa-circle-info text-zinc-500"></i> 專員數據分析提示：</p>
+        <ul class="list-disc pl-5 space-y-1 text-zinc-700">
+            <li>表格內綠色標記 <span class="text-emerald-700 font-bold">● 最低</span> 代表該產品「最平賣出價」（對買家最有利）。</li>
+            <li>表格內橙色標記 <span class="text-amber-600 font-bold">● 最高</span> 代表該產品「最高回購價」（對放金者最有利）。</li>
+            <li>本系統每 5 分鐘自動從您的 Google 試算表雲端資料庫提取最新牌價。</li>
+        </ul>
+    </div>
+
+    <script>
+        // ⚠️ 請記得在下方雙引號內，貼上您的 Google 試算表 CSV 網址 ⚠️
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPl39uNAnwz5zXo1NlRptVbJ15F49P43O8I6p6r87A4mO9X93R2D2D2D/pub?output=csv";
 
         let countdownValue = 300; // 5分鐘 = 300秒
@@ -94,7 +221,7 @@
                 if (lines[i].length < 4) continue;
                 let row = {};
                 for (let j = 0; j < headers.length; j++) {
-                   https://docs.google.com/spreadsheets/d/e/2PACX-1vRJt39RNkJ5FBycZM2ToX0p2RHmp-NE4eRcuIkQ8UeP3JA3Z4JsZi0wqhyNYwI3I19cS1cvi_fF0w2_/pub?output=csv
+                    row[headers[j].trim()] = lines[i][j].trim();
                 }
                 data.push(row);
             }
@@ -104,12 +231,26 @@
         // 從 Google Sheets 獲取數據並渲染
         async function fetchSheetData() {
             try {
+                // 將「立即更新」按鈕文字暫時改為「正在同步...」，並禁用按鈕
+                const button = document.querySelector('button[onclick="fetchSheetData()"]');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> 正在同步...';
+                button.disabled = true;
+                button.classList.remove('gold-gradient');
+                button.classList.add('bg-zinc-400'); // 淺灰色禁用狀態
+
                 const response = await fetch(CSV_URL + "&t=" + new Date().getTime()); // 加上時間戳防止瀏覽器快取
                 const text = await response.text();
                 const rawData = parseCSV(text);
                 
                 renderTable(rawData);
                 countdownValue = 300; // 成功後重設倒數
+
+                // 恢復按鈕狀態
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.add('gold-gradient');
+                button.classList.remove('bg-zinc-400');
             } catch (error) {
                 console.error("讀取 Google 試算表失敗:", error);
                 alert("雲端讀取失敗，請檢查試算表是否已正確發布為 CSV！");
@@ -118,7 +259,7 @@
 
         // 渲染表格與高亮邏輯
         function renderTable(data) {
-            // 🟢 已將此處的產品名稱修正為 "足鉑金"
+            // 已將產品名稱修正為 "足鉑金"
             const products = ["飾金", "足鉑金", "金粒"];
             const shops = ["周生生", "六福珠寶", "周大福"];
             const tbody = document.getElementById("gold-table-body");
@@ -153,33 +294,182 @@
                     });
                 }
 
-                // 產生 HTML 行
+                // 產生 HTML 行，加入明亮版懸停效果和垂直邊框
                 let tr = document.createElement("tr");
-                tr.className = "hover:bg-zinc-900/30 transition duration-150";
+                tr.className = "table-row-hover transition duration-150";
                 
-                // 🟢 已將此處的圖標比對修正為 "足鉑金"
-                let icon = p === "飾金" ? "fa-gem" : (p === "足鉑金" ? "fa-ring" : "fa-cubes");
-                let htmlStr = `<td class="p-4 font-semibold text-zinc-200 flex items-center gap-2"><i class="fa-solid ${icon} text-yellow-600/70 text-xs"></i> ${p}</td>`;
+                let icon = p === "飾金" ? "fa-gem text-yellow-600/80" : (p === "足鉑金" ? "fa-ring text-slate-500" : "fa-cubes text-yellow-700/80");
+                let htmlStr = `<td class="p-4 font-semibold text-zinc-950 flex items-center gap-2"><i class="fa-solid ${icon} text-xs"></i> ${p}</td>`;
 
                 shops.forEach(s => {
                     let sell = db[p]?.[s]?.sell || 0;
                     let buy = db[p]?.[s]?.buy || 0;
 
-                    let sellStyle = sell === minSell ? "bg-emerald-500/10 text-emerald-400 font-bold rounded px-1.5 py-0.5 border border-emerald-500/20 text-xs" : "text-zinc-300";
-                    let buyStyle = buy === maxBuy ? "bg-amber-500/10 text-amber-500 font-bold rounded px-1.5 py-0.5 border border-amber-500/20 text-xs" : "text-zinc-400";
+                    // 高亮標籤樣式：明亮色調
+                    let sellStyle = sell === minSell ? "bg-emerald-100 text-emerald-800 font-bold rounded px-1.5 py-0.5 border border-emerald-300 text-xs shadow-sm" : "text-zinc-900";
+                    let buyStyle = buy === maxBuy ? "bg-amber-100 text-amber-900 font-bold rounded px-1.5 py-0.5 border border-amber-300 text-xs shadow-sm" : "text-zinc-800";
 
-                    let sellLabel = sell === minSell ? ' <span class="text-[10px] text-emerald-500 font-normal">●最低</span>' : '';
-                    let buyLabel = buy === maxBuy ? ' <span class="text-[10px] text-amber-500 font-normal">●最高</span>' : '';
+                    let sellLabel = sell === minSell ? ' <span class="text-[10px] text-emerald-700 font-normal">●最低</span>' : '';
+                    let buyLabel = buy === maxBuy ? ' <span class="text-[10px] text-amber-700 font-normal">●最高</span>' : '';
 
                     htmlStr += `
-                        <td class="p-4 text-center">
+                        <td class="p-4 text-center border-l border-zinc-200">
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="py-1">
-                                    <span class="block text-[10px] text-zinc-500">賣出</span>
+                                    <span class="block text-[10px] text-zinc-600 font-medium">賣出</span>
                                     <span class="${sellStyle}">$${sell.toLocaleString()}${sellLabel}</span>
                                 </div>
-                                <div class="py-1 border-l border-zinc-800/50">
-                                    <span class="block text-[10px] text-zinc-500">買入(回購)</span>
+                                <div class="py-1 border-l border-zinc-200/80">
+                                    <span class="block text-[10px] text-zinc-600 font-medium">買入(回購)</span>
+                                    <span class="${buyStyle}">$${buy.toLocaleString()}${buyLabel}</span>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                });
+
+                tr.innerHTML = htmlStr;
+                tbody.appendChild(tr);
+            });
+
+            // 更新快報橫幅
+            document.getElementById("best-sell-announcement").innerHTML = `【${minSellData.shop}】飾金賣出價最平 $${minSellData.value.toLocaleString()}`;
+            document.getElementById("best-buy-announcement").innerHTML = `【${maxBuyData.shop}】飾金回購價最高 $${maxBuyData.value.toLocaleString()}`;
+        }
+
+        // 倒數計時功能
+        function startTimer() {
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                if (countdownValue <= 0) {
+                    fetchSheetData();
+                } else {
+                    let mins = Math.floor(countdownValue / 60).toString().padStart(2, '0');
+                    let secs = (countdownValue % 60).toString().padStart(2, '0');
+                    document.getElementById("countdown").innerText = `${mins}:${secs}`;
+                }
+            }, 1000);
+        }
+
+        // 初始化載入
+        fetchSheetData();
+        startTimer();
+    </script>
+</body>
+</html>
+        let countdownTimer;
+
+        // 解析 CSV 文本為結構化對象
+        function parseCSV(text) {
+            const lines = text.split('\n').map(line => line.split(','));
+            const headers = lines[0];
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].length < 4) continue;
+                let row = {};
+                for (let j = 0; j < headers.length; j++) {
+                    row[headers[j].trim()] = lines[i][j].trim();
+                }
+                data.push(row);
+            }
+            return data;
+        }
+
+        // 從 Google Sheets 獲取數據並渲染
+        async function fetchSheetData() {
+            try {
+                // 將「立即更新」按鈕文字暫時改為「正在同步...」，並禁用按鈕
+                const button = document.querySelector('button[onclick="fetchSheetData()"]');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> 正在同步...';
+                button.disabled = true;
+                button.classList.remove('gold-gradient');
+                button.classList.add('bg-zinc-400'); // 淺灰色禁用狀態
+
+                const response = await fetch(CSV_URL + "&t=" + new Date().getTime()); // 加上時間戳防止瀏覽器快取
+                const text = await response.text();
+                const rawData = parseCSV(text);
+                
+                renderTable(rawData);
+                countdownValue = 300; // 成功後重設倒數
+
+                // 恢復按鈕狀態
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.add('gold-gradient');
+                button.classList.remove('bg-zinc-400');
+            } catch (error) {
+                console.error("讀取 Google 試算表失敗:", error);
+                alert("雲端讀取失敗，請檢查試算表是否已正確發布為 CSV！");
+            }
+        }
+
+        // 渲染表格與高亮邏輯
+        function renderTable(data) {
+            // 已將產品名稱修正為 "足鉑金"
+            const products = ["飾金", "足鉑金", "金粒"];
+            const shops = ["周生生", "六福珠寶", "周大福"];
+            const tbody = document.getElementById("gold-table-body");
+            tbody.innerHTML = "";
+
+            let minSellData = { value: Infinity, shop: '', item: '' };
+            let maxBuyData = { value: -Infinity, shop: '', item: '' };
+
+            // 建立數據快速查找索引
+            let db = {};
+            data.forEach(item => {
+                if(!db[item.產品]) db[item.產品] = {};
+                db[item.產品][item.金行] = {
+                    sell: parseInt(item.賣出價) || 0,
+                    buy: parseInt(item.買入價) || 0
+                };
+            });
+
+            // 遍歷每種產品找出最高最划算
+            products.forEach(p => {
+                let sellValues = shops.map(s => db[p]?.[s]?.sell || Infinity);
+                let buyValues = shops.map(s => db[p]?.[s]?.buy || -Infinity);
+
+                let minSell = Math.min(...sellValues);
+                let maxBuy = Math.max(...buyValues);
+
+                // 紀錄飾金的最佳推薦通報
+                if (p === "飾金") {
+                    shops.forEach(s => {
+                        if (db[p]?.[s]?.sell === minSell) minSellData = { value: minSell, shop: s };
+                        if (db[p]?.[s]?.buy === maxBuy) maxBuyData = { value: maxBuy, shop: s };
+                    });
+                }
+
+                // 產生 HTML 行，加入明亮版懸停效果和垂直邊框
+                let tr = document.createElement("tr");
+                tr.className = "table-row-hover transition duration-150";
+                
+                let icon = p === "飾金" ? "fa-gem text-yellow-600/80" : (p === "足鉑金" ? "fa-ring text-slate-500" : "fa-cubes text-yellow-700/80");
+                let htmlStr = `<td class="p-4 font-semibold text-zinc-950 flex items-center gap-2"><i class="fa-solid ${icon} text-xs"></i> ${p}</td>`;
+
+                shops.forEach(s => {
+                    let sell = db[p]?.[s]?.sell || 0;
+                    let buy = db[p]?.[s]?.buy || 0;
+
+                    // 高亮標籤樣式：明亮色調
+                    let sellStyle = sell === minSell ? "bg-emerald-100 text-emerald-800 font-bold rounded px-1.5 py-0.5 border border-emerald-300 text-xs shadow-sm" : "text-zinc-900";
+                    let buyStyle = buy === maxBuy ? "bg-amber-100 text-amber-900 font-bold rounded px-1.5 py-0.5 border border-amber-300 text-xs shadow-sm" : "text-zinc-800";
+
+                    let sellLabel = sell === minSell ? ' <span class="text-[10px] text-emerald-700 font-normal">●最低</span>' : '';
+                    let buyLabel = buy === maxBuy ? ' <span class="text-[10px] text-amber-700 font-normal">●最高</span>' : '';
+
+                    htmlStr += `
+                        <td class="p-4 text-center border-l border-zinc-200">
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="py-1">
+                                    <span class="block text-[10px] text-zinc-600 font-medium">賣出</span>
+                                    <span class="${sellStyle}">$${sell.toLocaleString()}${sellLabel}</span>
+                                </div>
+                                <div class="py-1 border-l border-zinc-200/80">
+                                    <span class="block text-[10px] text-zinc-600 font-medium">買入(回購)</span>
                                     <span class="${buyStyle}">$${buy.toLocaleString()}${buyLabel}</span>
                                 </div>
                             </div>
