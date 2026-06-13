@@ -81,7 +81,7 @@
                 </tr>
             </thead>
             <tbody class="text-sm divide-y divide-zinc-200" id="gold-table-body">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -95,24 +95,21 @@
     </div>
 
     <script>
-        // ⚠️ 請在下方雙引號內，替換貼上您在【第一部分第2步】複製的真實 Google CSV 網址 ⚠️
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJt39RNkJ5FBycZM2ToX0p2RHmp-NE4eRcuIkQ8UeP3JA3Z4JsZi0wqhyNYwI3I19cS1cvi_fF0w2_/pub?output=csv
+        // 修正後的正確 CSV 網址（已補齊結尾引號）
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJt39RNkJ5FBycZM2ToX0p2RHmp-NE4eRcuIkQ8UeP3JA3Z4JsZi0wqhyNYwI3I19cS1cvi_fF0w2_/pub?output=csv";
 
         let countdownValue = 300; 
         let countdownTimer;
 
         function parseCSV(text) {
-            // 自動清理換行與前後多餘空格
             const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             if (lines.length === 0) return [];
 
-            // 【終極兼容】自動偵測 Google 匯出時使用的是「逗號 ,」還是「分號 ;」
             let delimiter = ',';
             if (lines[0].includes(';')) {
                 delimiter = ';';
             }
 
-            // 讀取標題，並拔除所有看不見的隱形控制字元
             const headers = lines[0].split(delimiter).map(h => h.trim().replace(/[\r\n\t\xFEFF]/g, ''));
             
             const data = [];
@@ -129,7 +126,7 @@
                 data.push(row);
             }
             return data;
-        } }
+        }
 
         async function fetchSheetData() {
             try {
@@ -175,16 +172,16 @@
             });
 
             products.forEach(p => {
-                let sellValues = shops.map(s => db[p]?.[s]?.sell || Infinity);
-                let buyValues = shops.map(s => db[p]?.[s]?.buy || -Infinity);
+                let sellValues = shops.map(s => db[p]?.[s]?.sell || Infinity).filter(v => v > 0);
+                let buyValues = shops.map(s => db[p]?.[s]?.buy || -Infinity).filter(v => v > 0);
 
-                let minSell = Math.min(...sellValues);
-                let maxBuy = Math.max(...buyValues);
+                let minSell = sellValues.length ? Math.min(...sellValues) : 0;
+                let maxBuy = buyValues.length ? Math.max(...buyValues) : 0;
 
                 if (p === "飾金") {
                     shops.forEach(s => {
-                        if (db[p]?.[s]?.sell === minSell) minSellData = { value: minSell, shop: s };
-                        if (db[p]?.[s]?.buy === maxBuy) maxBuyData = { value: maxBuy, shop: s };
+                        if (db[p]?.[s]?.sell === minSell && minSell > 0) minSellData = { value: minSell, shop: s };
+                        if (db[p]?.[s]?.buy === maxBuy && maxBuy > 0) maxBuyData = { value: maxBuy, shop: s };
                     });
                 }
 
@@ -198,11 +195,11 @@
                     let sell = db[p]?.[s]?.sell || 0;
                     let buy = db[p]?.[s]?.buy || 0;
 
-                    let sellStyle = sell === minSell ? "bg-emerald-100 text-emerald-800 font-bold rounded px-1.5 py-0.5 border border-emerald-300 text-xs shadow-sm" : "text-zinc-900";
-                    let buyStyle = buy === maxBuy ? "bg-amber-100 text-amber-900 font-bold rounded px-1.5 py-0.5 border border-amber-300 text-xs shadow-sm" : "text-zinc-800";
+                    let sellStyle = (sell === minSell && sell > 0) ? "bg-emerald-100 text-emerald-800 font-bold rounded px-1.5 py-0.5 border border-emerald-300 text-xs shadow-sm" : "text-zinc-900";
+                    let buyStyle = (buy === maxBuy && buy > 0) ? "bg-amber-100 text-amber-900 font-bold rounded px-1.5 py-0.5 border border-amber-300 text-xs shadow-sm" : "text-zinc-800";
 
-                    let sellLabel = sell === minSell ? ' <span class="text-[10px] text-emerald-700 font-normal">●最低</span>' : '';
-                    let buyLabel = buy === maxBuy ? ' <span class="text-[10px] text-amber-700 font-normal">●最高</span>' : '';
+                    let sellLabel = (sell === minSell && sell > 0) ? ' <span class="text-[10px] text-emerald-700 font-normal">●最低</span>' : '';
+                    let buyLabel = (buy === maxBuy && buy > 0) ? ' <span class="text-[10px] text-amber-700 font-normal">●最高</span>' : '';
 
                     htmlStr += `
                         <td class="p-4 text-center border-l border-zinc-200">
@@ -224,8 +221,17 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById("best-sell-announcement").innerHTML = `【${minSellData.shop}】飾金賣出價最平 $${minSellData.value.toLocaleString()}`;
-            document.getElementById("best-buy-announcement").innerHTML = `【${maxBuyData.shop}】飾金回購價最高 $${maxBuyData.value.toLocaleString()}`;
+            if (minSellData.value !== Infinity) {
+                document.getElementById("best-sell-announcement").innerHTML = `【${minSellData.shop}】飾金賣出價最平 $${minSellData.value.toLocaleString()}`;
+            } else {
+                document.getElementById("best-sell-announcement").innerHTML = "暫無數據";
+            }
+            
+            if (maxBuyData.value !== -Infinity) {
+                document.getElementById("best-buy-announcement").innerHTML = `【${maxBuyData.shop}】飾金回購價最高 $${maxBuyData.value.toLocaleString()}`;
+            } else {
+                document.getElementById("best-buy-announcement").innerHTML = "暫無數據";
+            }
         }
 
         function startTimer() {
